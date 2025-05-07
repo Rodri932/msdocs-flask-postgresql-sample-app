@@ -7,7 +7,7 @@ name: Build and deploy Python app to Azure Web App - msdocs-python-postgres-app1
 on:
   push:
     branches:
-      - starter-no-infra
+      - disabled-branch
   workflow_dispatch:
 
 jobs:
