@@ -1,5 +1,5 @@
 Flask
-Flask-Migrate
+flask-migrate==4.0.7
 Flask-SQLAlchemy
 flask_wtf
 psycopg2
