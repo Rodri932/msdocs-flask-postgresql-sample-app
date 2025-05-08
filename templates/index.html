@@ -1,82 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>PECL2 Cloud Data</title>
+    <meta charset="UTF-8">
+    <title>Visor de Imágenes Subidas</title>
     <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; cursor: pointer; }
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:hover { background-color: #f5f5f5; }
+        h1 { color: #333; }
     </style>
 </head>
 <body>
-    <h1>Datos de Imágenes en el Cloud</h1>
-    <table id="dataTable">
+    <h1>Datos Subidos al Cloud</h1>
+    <table id="data-table">
         <thead>
             <tr>
-                <th onclick="sortTable(0)">Nombre Archivo</th>
-                <th onclick="sortTable(1)">Píxeles Rojos</th>
-                <th onclick="sortTable(2)">Píxeles Verdes</th>
-                <th onclick="sortTable(3)">Píxeles Azules</th>
-                <th onclick="sortTable(4)">Fecha</th>
-                <th onclick="sortTable(5)">Usuario</th>
+                <th>Archivo</th>
+                <th>Rojo</th>
+                <th>Verde</th>
+                <th>Azul</th>
+                <th>Fecha</th>
+                <th>Usuario</th>
             </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody>
+            <!-- Datos se insertarán aquí dinámicamente -->
+        </tbody>
     </table>
+
     <script>
         fetch('/api/data')
             .then(response => response.json())
             .then(data => {
-                const tableBody = document.getElementById('tableBody');
-                data.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.filename}</td>
-                        <td>${row.redCount}</td>
-                        <td>${row.greenCount}</td>
-                        <td>${row.blueCount}</td>
-                        <td>${row.timestamp}</td>
-                        <td>${row.username}</td>
+                const tbody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.filename}</td>
+                        <td>${item.redCount}</td>
+                        <td>${item.greenCount}</td>
+                        <td>${item.blueCount}</td>
+                        <td>${new Date(item.timestamp).toLocaleString()}</td>
+                        <td>${item.username}</td>
                     `;
-                    tableBody.appendChild(tr);
+                    tbody.appendChild(row);
                 });
             })
-            .catch(error => console.error('Error fetching data:', error));
-
-        function sortTable(n) {
-            const table = document.getElementById('dataTable');
-            let rows, switching = true, i, shouldSwitch, dir = 'asc', switchcount = 0;
-            while (switching) {
-                switching = false;
-                rows = table.rows;
-                for (i = 1; i < (rows.length - 1); i++) {
-                    shouldSwitch = false;
-                    const x = rows[i].getElementsByTagName('TD')[n];
-                    const y = rows[i + 1].getElementsByTagName('TD')[n];
-                    let cmpX = isNaN(parseInt(x.innerHTML)) ? x.innerHTML.toLowerCase() : parseInt(x.innerHTML);
-                    let cmpY = isNaN(parseInt(y.innerHTML)) ? y.innerHTML.toLowerCase() : parseInt(y.innerHTML);
-                    if (dir == 'asc') {
-                        if (cmpX > cmpY) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    } else if (dir == 'desc') {
-                        if (cmpX < cmpY) {
-                            shouldSwitch = true;
-                            break;
-                        }
-                    }
-                }
-                if (shouldSwitch) {
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                    switchcount++;
-                } else if (switchcount == 0 && dir == 'asc') {
-                    dir = 'desc';
-                    switching = true;
-                }
-            }
-        }
+            .catch(error => {
+                console.error('Error al obtener los datos:', error);
+            });
     </script>
 </body>
 </html>

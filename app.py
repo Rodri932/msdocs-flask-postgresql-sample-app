@@ -3,14 +3,15 @@ from flask_migrate import Migrate
 from models import db, ImageData
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
 
-# Configurar la base de datos según el entorno
+# Asegurar que el directorio instance exista
+os.makedirs(app.instance_path, exist_ok=True)
+
+# Configuración de base de datos según entorno
 if os.getenv('AZURE_POSTGRESQL_CONNECTIONSTRING'):
-    # Entorno de Azure (producción)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('AZURE_POSTGRESQL_CONNECTIONSTRING')
 else:
-    # Entorno local (codespace)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'local.db')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

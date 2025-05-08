@@ -10,3 +10,6 @@ class ImageData(db.Model):
     blue_count = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self):
+        return f'<ImageData {self.filename}>'
